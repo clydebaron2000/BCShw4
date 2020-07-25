@@ -163,7 +163,7 @@ function displayQuiz(isCorrect) {
             ));
         }
         section.append(ul);
-        section.append(htmlToElement(
+        section.append(htmlToElement( //for additional styling, modify to fade on timeElapsed for 500 ms
             "<h6>" +
             ((isCorrect) ? "" : "Wrong!") +
             "</h6>"
@@ -172,7 +172,7 @@ function displayQuiz(isCorrect) {
     }
 }
 
-function countdown() {
+function countdown() { //for additional styling, modify to be 100
     interval = setInterval(function() {
         displayTimer();
         timeElapsed++;
