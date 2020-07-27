@@ -1,3 +1,4 @@
+'use strict';
 const QUESTIONSET = [{
     "question": "Commonly used data types DO NOT include: ",
     "choices": ["strings", "booleans", "alerts", "numbers"],
@@ -18,7 +19,7 @@ const QUESTIONSET = [{
     "question": "A very useful tool used during development and debugging for printing content to the debugger is:",
     "choices": ["JavaScript", "terminal/bash", "for keeps", "console.log"],
     "answer": "console.log"
-}];
+}]; //our data
 var timerDisplay = document.querySelector("#timerDisplay");
 var timer = document.querySelector("#timer");
 var hsLink = document.querySelector("#HS");
@@ -26,14 +27,13 @@ var body = document.querySelector('body');
 var content = document.querySelector("#content");
 var title = document.querySelector("title");
 var form = document.querySelector("#hsform");
-var scoreBoard = [];
 var questionIndex = 0;
 var quizTime = 60; //seconds
-var interval;
-var timeElapsed;
-var previousUser;
-var highscoreArray;
-var prevScore;
+var interval; //timer
+var timeElapsed; //time elapsed
+var previousUser; //only needed for additional signaling
+var highscoreArray; //storage
+var prevScore; //only needed for additional signaling
 
 function htmlToElement(html) { //put html as a string, get actual html out.
     var template = document.createElement('template');
@@ -41,6 +41,23 @@ function htmlToElement(html) { //put html as a string, get actual html out.
     template.innerHTML = html;
     return template.content.firstChild;
 }
+
+function compareValues(key, order = 'ascending') {
+    return function innerSort(a, b) {
+        if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key))
+            return 0;
+        const varA = (typeof a[key] === 'string') ?
+            a[key].toUpperCase() : a[key];
+        const varB = (typeof b[key] === 'string') ?
+            b[key].toUpperCase() : b[key];
+        let comparison = 0;
+        if (varA > varB)
+            comparison = 1;
+        else if (varA < varB)
+            comparison = -1;
+        return ((order === 'descending') ? (comparison * -1) : comparison);
+    };
+} //code from https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
 
 function enterScoreBoard(score) {
     prevScore = score;
@@ -72,8 +89,6 @@ function enterScoreBoard(score) {
         event.preventDefault();
         const userName = document.querySelector("#name").value.trim();
         if (userName === "") return;
-        previousUser = userName;
-        console.log(userName);
         highscoreArray = JSON.parse(localStorage.getItem("highscoreArray"));
         const newEntry = { "name": userName, "score": prevScore };
         if (highscoreArray === null)
@@ -81,7 +96,7 @@ function enterScoreBoard(score) {
         else if (highscoreArray.includes(newEntry))
             return; //we don't want duplicate entries to be stored, we'll just treat it as 1 entry
         highscoreArray.push(newEntry);
-        console.log(highscoreArray);
+        localStorage.setItem("highscoreArray", JSON.stringify(highscoreArray));
         displayScoreBoard();
         //make sure none are the same
         //save to local storage
@@ -94,10 +109,7 @@ function displayScoreBoard() {
     content.textContent = "";
     timerDisplay.setAttribute("style", "display:none");
     hsLink.setAttribute("style", "display:none");
-    console.log((localStorage.getItem("highscoreArray")));
     highscoreArray = JSON.parse(localStorage.getItem("highscoreArray"));
-    console.log(typeof(highscoreArray));
-    console.log(highscoreArray);
     //create function
     if (highscoreArray.length === 0)
         localStorage.setItem("highscoreArray", JSON.stringify([]));
@@ -112,11 +124,10 @@ function displayScoreBoard() {
         "</h1>"
     ));
     var ol = document.createElement('ol');
-    console.log(typeof highscoreArray);
     if (typeof(highscoreArray) !== 'object' || highscoreArray.length === 0)
         ol.textContent = "No highscores yet! You could be the first!";
     else
-        for (player of highscoreArray)
+        for (let player of highscoreArray)
             ol.append(htmlToElement(
                 "<li>" +
                 player.name + ": " +
@@ -153,7 +164,7 @@ function displayQuiz(isCorrect) {
             "</h1>"
         ));
         var ul = document.createElement('ul');
-        for (choice of QUESTIONSET[questionIndex].choices) {
+        for (let choice of QUESTIONSET[questionIndex].choices) {
             ul.append(htmlToElement(
                 "<ul>" +
                 "<button class=\"choice\">" +
@@ -183,15 +194,6 @@ function countdown() { //for additional styling, modify to be 100
     }, 1000);
 }
 
-function initQuiz() {
-    title.textContent = "Quiz time!"
-    timeElapsed = 0;
-    timerDisplay.setAttribute("style", "display:inline");
-    hsLink.setAttribute("style", "display:none");
-    displayQuiz(true); //to show nothing
-    countdown();
-}
-
 function displayTimer() {
     const timeLeft = quizTime - timeElapsed;
     timer.textContent = ((timeLeft > 9) ? "" : "0") + timeLeft;
@@ -199,13 +201,13 @@ function displayTimer() {
 
 function mainMenu() {
     title.textContent = "Code Quiz Challenge Menu";
-    clearInterval(interval);
+    clearInterval(interval); //clear any timer that's happening
     timeElapsed = quizTime; //display 0 time
     hsLink.setAttribute("style", "display:inline");
     timerDisplay.setAttribute("style", "display:none");
-    content.textContent = "";
+    content.textContent = ""; //erases my content
     content.append(htmlToElement(
-        "<h1 id = \"title\">Coding Quiz Challenge</h1>"
+        "<h1 id = \"title\">Coding Quiz Challenge</h1>" //looks like html
     ));
     content.append(htmlToElement(
         "<p id=\"description\">" +
@@ -217,42 +219,36 @@ function mainMenu() {
         "<button id=\"startBtn\">Start Quiz</button>" +
         "</section>"
     ));
+    document.getElementsByClassName("container");
 }
 
-function compareValues(key, order = 'ascending') {
-    return function innerSort(a, b) {
-        if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key))
-            return 0;
-        const varA = (typeof a[key] === 'string') ?
-            a[key].toUpperCase() : a[key];
-        const varB = (typeof b[key] === 'string') ?
-            b[key].toUpperCase() : b[key];
-        let comparison = 0;
-        if (varA > varB)
-            comparison = 1;
-        else if (varA < varB)
-            comparison = -1;
-        return ((order === 'descending') ? (comparison * -1) : comparison);
-    };
+function initQuiz() {
+    questionIndex = 0;
+    title.textContent = "Quiz time!"
+    timeElapsed = 0;
+    timerDisplay.setAttribute("style", "display:inline");
+    hsLink.setAttribute("style", "display:none");
+    displayQuiz(true); //to show nothing
+    countdown();
 }
+
 body.addEventListener("click", function(event) {
     event.stopPropagation();
     const text = event.target.textContent;
     const c = event.target.getAttribute("class");
     if (text === "Start Quiz")
-        initQuiz();
+        initQuiz(); //initalize quiz
     if (c === "choice") //choice for a question
         if (QUESTIONSET[questionIndex].choices.includes(text))
-            displayQuiz(text === QUESTIONSET[questionIndex++].answer);
+            displayQuiz(text === QUESTIONSET[questionIndex++].answer); //move to the next question and display if its wrong or right
     if (text === "View Highscores") {
-        displayScoreBoard();
+        displayScoreBoard(); //display highscores
     }
-    if (c === "back") mainMenu();
-
+    if (c === "back") mainMenu(); //mainmenu
     if (c === "clearHS") {
-        localStorage.setItem("highscoreArray", JSON.stringify([]));
-        displayScoreBoard();
+        localStorage.setItem("highscoreArray", JSON.stringify([])); //clear localstorage
+        displayScoreBoard(); //display highscores
     }
 });
-localStorage.setItem("highscoreArray", JSON.stringify([]));
+
 mainMenu();
