@@ -11,9 +11,9 @@ https://clydebaron2000.github.io/BCShw4/
 Click the link to view the full project via Github Pages.
 
 ## Project Preview
-<img src="assets/mainmenu.PNG" width="200px"/>
-<img src="assets/score.PNG" width="200px"/>
-<img src="assets/leaderboard.PNG" width="200px"/>
+<img src="Assets/mainmenu.PNG" width="200px"/>
+<img src="Assets/score.PNG" width="200px"/>
+<img src="Assets/leaderboard.PNG" width="200px"/>
 
 
 ## Author
