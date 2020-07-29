@@ -65,8 +65,11 @@ function enterScoreBoard(score) {
     clearTimeout(interval);
     content.textContent = "";
     timerDisplay.setAttribute("style", "display:none");
-    alert("Quiz Finished!");
-    if (score === 0) displayScoreBoard(score); //if no score, just display endscreen
+    alert("Quiz Finished!\n" + ((score !== 0) ? "" : "Your score was zero, taking you to the leaderboard now."));
+    if (score === 0) {
+        displayScoreBoard(score);
+        return;
+    } //if no score, just display endscreen
     var section = document.createElement('section');
     section.append(htmlToElement(
         "<h1>" +
@@ -120,7 +123,7 @@ function displayScoreBoard() {
     var section = document.createElement('section');
     section.append(htmlToElement(
         "<h1>" +
-        "Lederboard" +
+        "Leaderboard" +
         "</h1>"
     ));
     var ol = document.createElement('ol');
@@ -136,12 +139,12 @@ function displayScoreBoard() {
             ));
     section.appendChild(ol);
     section.append(htmlToElement(
-        "<button class=\"back\">" +
+        "<button class=\"back button\">" +
         "Back to menu" +
         "</button>"
     ));
     section.append(htmlToElement(
-        "<button class=\"clearHS\">" +
+        "<button class=\"clearHS button\">" +
         "Clear Leaderboard" +
         "</button>"
     ));
@@ -151,29 +154,42 @@ function displayScoreBoard() {
 
 function displayQuiz(isCorrect) {
     content.textContent = "";
+    if (!isCorrect)
+        timeElapsed += 10;
     if (questionIndex >= QUESTIONSET.length) {
         clearInterval(interval);
         enterScoreBoard(quizTime - timeElapsed);
     } else {
         if (!isCorrect)
             timeElapsed += 10;
-        var section = document.createElement('section');
+        var section = htmlToElement("<section class='card'></section>");
         section.append(htmlToElement(
-            "<h1>" +
+            "<h2 class='card-title'>" +
             QUESTIONSET[questionIndex].question +
-            "</h1>"
+            "</h2>"
         ));
-        var ul = document.createElement('ul');
+        var ul = htmlToElement("<ul class='list-unstyled'></ul>");
         for (let choice of QUESTIONSET[questionIndex].choices) {
             ul.append(htmlToElement(
-                "<ul>" +
+                "<li>" +
                 "<button class=\"choice\">" +
                 choice +
                 "</button>" +
-                "</ul>"
+                "</li>"
             ));
         }
         section.append(ul);
+        var timer;
+        var count = 0;
+        if (!isCorrect) {
+            timer = setInterval(function() {
+                count++;
+                if (count >= 2) {
+                    clearInterval(timer);
+                    document.querySelector('h6').textContent = "";
+                }
+            }, 1000);
+        }
         section.append(htmlToElement( //for additional styling, modify to fade on timeElapsed for 500 ms
             "<h6>" +
             ((isCorrect) ? "" : "Wrong!") +
@@ -216,7 +232,7 @@ function mainMenu() {
     ));
     content.append(htmlToElement(
         "<section>" +
-        "<button id=\"startBtn\">Start Quiz</button>" +
+        "<button id=\"startBtn\" class='button'>Start Quiz</button>" +
         "</section>"
     ));
     document.getElementsByClassName("container");
@@ -244,11 +260,12 @@ body.addEventListener("click", function(event) {
     if (text === "View Highscores") {
         displayScoreBoard(); //display highscores
     }
-    if (c === "back") mainMenu(); //mainmenu
-    if (c === "clearHS") {
+    if (c === "back button") mainMenu(); //mainmenu
+    if (c === "clearHS button") {
         localStorage.setItem("highscoreArray", JSON.stringify([])); //clear localstorage
         displayScoreBoard(); //display highscores
     }
-});
 
+
+});
 mainMenu();

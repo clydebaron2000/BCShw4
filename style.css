@@ -3,6 +3,74 @@
     margin: 0px;
 }
 
+.card-title {
+    padding: 10px 0 0 10px;
+}
+
+.card {
+    width: 50%;
+    padding: 10px;
+    border-radius: 1rem;
+}
+
+.button {
+    margin: 10px;
+    border-radius: .5em;
+    border-color: gray;
+    background-color: white;
+}
+
+.button:hover {
+    background-color: whitesmoke;
+}
+
+li button {
+    width: 100%;
+    margin: 5px;
+    border-radius: .5em;
+    background-color: white;
+}
+
+li button:hover {
+    background-color: whitesmoke;
+}
+
+.correct {
+    background-color: greenyellow;
+}
+
+.wrong {
+    background-color: red;
+}
+
+.exit {
+    animation-name: exit;
+    animation-duration: 1s;
+}
+
+@keyframes exit {
+    0% {
+        left: 0px;
+    }
+    100% {
+        left: -1000px;
+    }
+}
+
+.enter {
+    animation-name: enter;
+    animation-duration: 1s;
+}
+
+@keyframes enter {
+    0% {
+        left: 1000px;
+    }
+    100% {
+        left: 0px;
+    }
+}
+
 #HS {
     float: left;
 }
