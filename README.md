@@ -1,4 +1,4 @@
-# BCS HW 4: Password Generator
+# BCS HW 4: Quiz Challenge!
 
 An HTML site that utilizes JavaScript to run a quiz.
 
