@@ -162,6 +162,7 @@ function displayQuiz(isCorrect) {
     } else {
         if (!isCorrect)
             timeElapsed += 10;
+        //line below
         var section = htmlToElement("<section class='card'></section>");
         section.append(htmlToElement(
             "<h2 class='card-title'>" +
@@ -265,7 +266,7 @@ body.addEventListener("click", function(event) {
         localStorage.setItem("highscoreArray", JSON.stringify([])); //clear localstorage
         displayScoreBoard(); //display highscores
     }
-
+    // https://www.w3schools.com/howto/howto_js_animate.asp
 
 });
 mainMenu();
